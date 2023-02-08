@@ -1,28 +1,30 @@
 import express from 'express'
 import db from '../db'
+import { body, validationResult } from "express-validator";
 const app = express.Router()
 
 
 
-app.post('/comments', async (req, res) => {
-    const { content, authorId, postId } = req.body;
-    const comment = await db.comment.create({
-      data: {
-        content,
-        author: {
-          connect: {
-            id: req.user.id,
-          },
-        },
-        post: {
-          connect: {
-            id: postId,
-          },
+app.post('/comment', body('content').exists().isString().notEmpty(), body('postId').exists().isString().notEmpty(), async (req, res) => {
+  validationResult(req).throw()
+  const { content, postId } = req.body;
+  const comment = await db.comment.create({
+    data: {
+      content,
+      author: {
+        connect: {
+          id: req.user.id,
         },
       },
-    });
-    res.json(comment);
+      post: {
+        connect: {
+          id: postId,
+        },
+      },
+    },
   });
+  res.json(comment);
+});
 
   app.get('/comments', async (req, res) => {
     if (req.user.role === 'ADMIN') {
@@ -38,7 +40,7 @@ app.post('/comments', async (req, res) => {
     }
   });
 
-  app.get('/comments/:id', async (req, res) => {
+  app.get('/comment/:id', async (req, res) => {
     const { id } = req.params;
     const comment = await db.comment.findUnique({
       where: {
@@ -55,28 +57,47 @@ app.post('/comments', async (req, res) => {
     res.json(comment);
   });
 
-  app.patch('/comments/:id', async (req, res) => {
-    const { id } = req.params;
-    const { content } = req.body;
-    const comment = await db.comment.update({
+app.put('/comment/:id', body('content').exists().isString().notEmpty(), body('postId').exists().isString().notEmpty(), async (req, res) => {
+  validationResult(req).throw()
+  const { content } = req.body;
+  const comment = await db.comment.findUnique({ where: { id: req.params?.id } });
+
+  if (!comment) {
+    return res.sendStatus(404);
+  }
+
+  if (req.user.role === 'ADMIN' || req.user.id === comment.authorId) {
+    const updatedComment = await db.comment.update({
       where: {
-        id,
+        id: req.params?.id,
       },
       data: {
         content,
       },
     });
-    res.json(comment);
-  });
+    res.json(updatedComment);
+  } else {
+    res.sendStatus(403);
+  }
+});
 
-  app.delete('/comments/:id', async (req, res) => {
+  app.delete('/comment/:id', async (req, res) => {
     const { id } = req.params;
-    await db.comment.delete({
-      where: {
-        id,
-      },
-    });
-    res.status(204).end();
+    const comment = await db.comment.findUnique({ where: { id } });
+  
+    if (!comment) {
+      return res.sendStatus(404);
+    }
+    if (req.user.role === 'ADMIN' || req.user.id === comment.authorId) {
+      await db.comment.delete({
+        where: {
+          id,
+        },
+      });
+      res.status(204).end();
+    } else {
+      res.sendStatus(403);
+    }
   });
 
   export default app

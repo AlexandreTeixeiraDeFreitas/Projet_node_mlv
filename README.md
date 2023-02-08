@@ -27,3 +27,51 @@ Launch Prisma studio
 ```bash
 $ pnpm prisma studio
 ```
+
+
+Sign-up
+```bash
+/sign-up
+```
+
+Sign-in
+```bash
+/sign-in
+```
+
+get user && put user
+```bash
+/api/user
+```
+
+info tous les user
+```bash
+/api/users
+```
+
+get user && put user && delete user (ADMIN)
+```bash
+/api/user/:id
+```
+get des post du user && post post
+```bash
+/api/post
+```
+get posts sur tous les posts avec tous les comments
+```bash
+/api/posts
+```
+
+get post && put post && delete post
+```bash
+/api/post/:id
+```
+get sur tous les comments
+```bash
+/api/comments
+```
+
+get comment && post comment && put comment && delete comment
+```bash
+/api/comment/:id
+```
