@@ -1,9 +1,11 @@
 import { RequestHandler } from "express";
 import db from "../db";
+import { body, validationResult } from "express-validator";
 import { comparePassword, createJWT, hashPassword } from "../modules/auth";
 
 export const createNewUser: RequestHandler = async (req, res) => {
   try {
+    validationResult(req).throw()
     if (!(req.body.username && req.body.password)) {
       return res.status(400).json({ message: 'Invalid body provided' })
     }
@@ -27,6 +29,7 @@ export const createNewUser: RequestHandler = async (req, res) => {
 
 export const signIn: RequestHandler = async (req, res) => {
   try {
+    validationResult(req).throw()
     if (!(req.body.username && req.body.password)) {
       return res.status(400).json({ message: 'Invalid body provided' })
     }

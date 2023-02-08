@@ -5,6 +5,7 @@ import userRouter from './routes/user'
 import postRouter from './routes/post'
 import commentRouter from './routes/comment'
 import { createNewUser, signIn } from './handlers/user'
+import { body, validationResult } from "express-validator";
 import Cors from 'cors'
 
 dotenv.config()
@@ -23,8 +24,8 @@ app.use('/api', protect, [
   commentRouter
 ])
 
-app.post('/sign-up', createNewUser)
-app.post('/sign-in', signIn)
+app.post('/sign-up', body('username').exists().isString().notEmpty(), body('name').exists().isString().notEmpty(), body('password').exists().isString().notEmpty(), createNewUser)
+app.post('/sign-in', body('username').exists().isString().notEmpty(), body('password').exists().isString().notEmpty(), signIn)
 
 app.listen(1234, () => {
   console.log('Listening on port 1234')
