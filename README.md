@@ -32,30 +32,57 @@ $ pnpm prisma studio
 Sign-up
 ```bash
 /sign-up
+{
+    "username": "username",
+    "name": "name",
+    "password": "password"
+}
 ```
 
 Sign-in
 ```bash
 /sign-in
+{
+    "username": "username",
+    "password": "password"
+}
 ```
 
 get user && put user
 ```bash
 /api/user
+
+PUT:
+{
+    "name": "name",
+    "password": "password"
+}
 ```
 
-info tous les user
+info sur tous les user
 ```bash
 /api/users
 ```
 
-get user && put user && delete user (ADMIN)
+get user (ADMIN) && put user (ADMIN) && delete user (ADMIN)
 ```bash
 /api/user/:id
+
+PUT:
+{
+    "name": "name",
+    "password": "password"
+}
 ```
-get des post du user && post post
+un post pour créer un post
 ```bash
 /api/post
+
+POST:
+{
+    "title": "title",
+    "content": "content"
+}
 ```
 get posts sur tous les posts avec tous les comments
 ```bash
@@ -65,13 +92,35 @@ get posts sur tous les posts avec tous les comments
 get post && put post && delete post
 ```bash
 /api/post/:id
+
+PUT:
+{
+    "title": "title",
+    "content": "content"
+}
 ```
 get sur tous les comments
 ```bash
 /api/comments
 ```
 
-get comment && post comment && put comment && delete comment
+post comment pour créer un commentaire
+```bash
+/api/comment
+
+POST:
+{
+    "content": "content",
+    "postId": "postId"
+}
+```
+
+get comment && put comment && delete comment
 ```bash
 /api/comment/:id
+
+PUT:
+{
+    "content": "content"
+}
 ```
