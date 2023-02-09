@@ -27,17 +27,13 @@ app.post('/comment', body('content').exists().isString().notEmpty(), body('postI
 });
 
   app.get('/comments', async (req, res) => {
-    if (req.user.role === 'ADMIN') {
-        const comments = await db.comment.findMany({
-        include: {
-            author: true,
-            post: true,
-        },
-        });
-        res.json(comments);
-    } else {
-        res.sendStatus(403);
-    }
+    const comments = await db.comment.findMany({
+    include: {
+        author: true,
+        post: true,
+    },
+    });
+    res.json(comments);
   });
 
   app.get('/comment/:id', async (req, res) => {

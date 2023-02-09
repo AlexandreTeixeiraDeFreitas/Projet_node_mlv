@@ -139,5 +139,4 @@ app.post('/post', body('title').exists().isString().notEmpty(), body('content').
     }
   });
 
-
   export default app
