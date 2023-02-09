@@ -76,13 +76,6 @@ app.post('/post', body('title').exists().isString().notEmpty(), body('content').
     }
     res.json(posts);
   });
-  
-  
-  
-  
-  
-
-
 
   app.get('/post/:id', async (req, res) => {
     const { id } = req.params;
@@ -92,6 +85,7 @@ app.post('/post', body('title').exists().isString().notEmpty(), body('content').
       },
       include: {
         author: true,
+        comments: true,
       },
     });
     if (!post) {
