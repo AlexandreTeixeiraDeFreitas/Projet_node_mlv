@@ -133,7 +133,7 @@ app.post('/post', body('title').exists().isString().notEmpty(), body('content').
           id,
         },
       });
-      res.status(204).json(post);
+      return res.status(204).end();
     } else {
       res.sendStatus(403);
     }
