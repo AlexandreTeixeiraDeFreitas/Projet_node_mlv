@@ -38,42 +38,47 @@ app.post('/post', body('title').exists().isString().notEmpty(), body('content').
   res.json(post);
 });
 
-  app.get('/posts', async (req, res) => {
- 
-    const posts = await db.post.findMany({
-      include: {
-        // author: true,
-        comments: true,
-      },
-    });
-    res.json(posts);
-  });
-
-
-
   // app.get('/posts', async (req, res) => {
-  //   let posts;
-  //   if (req.query.from) {
-  //     const form = req.query.from;
-  //     posts = await db.post.findMany({
-  //       where: {
-  //         createdAt: {
-  //           gte: new Date(parseInt(req.query.from * 1000)),
-  //         },
-  //       },
-  //       include: {
-  //         author: true,
-  //       },
-  //     });
-  //   } else {
-  //     posts = await db.post.findMany({
-  //       include: {
-  //         author: true,
-  //       },
-  //     });
-  //   }
+ 
+  //   const posts = await db.post.findMany({
+  //     include: {
+  //       // author: true,
+  //       comments: true,
+  //     },
+  //   });
   //   res.json(posts);
   // });
+
+
+
+  app.get('/posts/', async (req, res) => {
+    let posts;
+    const { from } = req.query;
+    if (from && !isNaN(Number(from))) {
+      posts = await db.post.findMany({
+        where: {
+          createdAt: {
+            gte: new Date(Number(from) * 1000),
+          },
+        },
+        include: {
+          author: true,
+        },
+      });
+    } else {
+      posts = await db.post.findMany({
+        include: {
+          author: true,
+        },
+      });
+    }
+    res.json(posts);
+  });
+  
+  
+  
+  
+  
 
 
 
