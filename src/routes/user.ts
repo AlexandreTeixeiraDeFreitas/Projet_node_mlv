@@ -1,5 +1,6 @@
 import express from 'express'
 import db from '../db'
+import { body, validationResult } from "express-validator";
 import { hashPassword } from "../modules/auth";
 const app = express.Router()
 
@@ -62,8 +63,9 @@ app.get('/user/:id', async (req, res) => {
   }
 });
 
-app.put('/user', async (req, res) => {
+app.put('/user', body('name').exists().isString().notEmpty(), body('password').exists().isString().notEmpty(), async (req, res) => {
   try {
+    validationResult(req).throw()
     if (!req.body.name)  {
       return res.status(400).json({ message: 'Invalid body provided' })
     }
@@ -84,9 +86,10 @@ app.put('/user', async (req, res) => {
     return res.status(400).json({ message: 'An error ocurred' })
   }
 })
-app.put('/user/:id', async (req, res) => {
+app.put('/user/:id', body('name').exists().isString().notEmpty(), body('password').exists().isString().notEmpty(), async (req, res) => {
   try {
-    if (!req.params.id)  {
+    validationResult(req).throw()
+    if (!req.params?.id)  {
       return res.status(400).json({ message: 'Invalid body provided' })
     }
 
@@ -96,7 +99,7 @@ app.put('/user/:id', async (req, res) => {
       const hash = await hashPassword(req.body.password)
       const updatedUser = await db.user.update({
         where: {
-          id: req.user.id
+          id: req.user?.id
         },
         data: {
           name: req.body.name,
