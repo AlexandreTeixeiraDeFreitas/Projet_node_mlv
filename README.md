@@ -81,7 +81,7 @@ PUT:
 un post pour créer un post
 ```bash
 /api/post
-/api/post?from=1675854657
+/api/post?from=1612767057
 POST:
 {
     "title": "title",
