@@ -88,7 +88,7 @@ app.put('/user', body('name').exists().isString().notEmpty(), body('password').e
 })
 app.put('/user/:id', body('name').exists().isString().notEmpty(),
  body('password').exists().isString().notEmpty(),
- body('role').exists().isString().notEmpty().matches(/^(USER|ADMIN)$/), async (req, res) => {
+ body('role').exists().isString().notEmpty(), async (req, res) => {
   try {
     validationResult(req).throw()
     if (!req.params?.id)  {
@@ -96,6 +96,10 @@ app.put('/user/:id', body('name').exists().isString().notEmpty(),
     }
 
     if (req.user.role === 'ADMIN') {
+      const allowedRoles = ['ADMIN', 'USER']
+      if (!allowedRoles.includes(req.body.role)) {
+        return res.status(400).json({ message: 'Role must be either ADMIN or USER'})
+      }
       const hash = await hashPassword(req.body.password)
       const updatedUser = await db.user.update({
         where: {
