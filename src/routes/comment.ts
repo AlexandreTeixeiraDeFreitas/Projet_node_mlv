@@ -59,7 +59,6 @@ app.post('/comment', body('content').exists().isString().notEmpty(), body('postI
 
   app.put('/comment/:id',
     body('content').exists().isString().notEmpty(), 
-    body('postId').exists().isString().notEmpty(),
    async (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
