@@ -57,29 +57,33 @@ app.post('/comment', body('content').exists().isString().notEmpty(), body('postI
     res.json(comment);
   });
 
-app.put('/comment/:id', body('content').exists().isString().notEmpty(), body('postId').exists().isString().notEmpty(), async (req, res) => {
-  validationResult(req).throw()
-  const { content } = req.body;
-  const comment = await db.comment.findUnique({ where: { id: req.params?.id } });
-
-  if (!comment) {
-    return res.sendStatus(404);
-  }
-
-  if (req.user.role === 'ADMIN' || req.user.id === comment.authorId) {
-    const updatedComment = await db.comment.update({
-      where: {
-        id: req.params?.id,
-      },
-      data: {
-        content,
-      },
-    });
-    res.json(updatedComment);
-  } else {
-    res.sendStatus(403);
-  }
-});
+  app.put('/comment/:id',
+    body('content').exists().isString().notEmpty(), 
+    body('postId').exists().isString().notEmpty(),
+   async (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(422).json({ errors: errors.array() });
+    }
+    
+    const { content, postId } = req.body;
+    
+    const comment = await db.comment.findUnique({ where: { id: req.user.id } });
+    if (!comment) {
+      return res.status(404).json({ message: 'Comment not found' });
+    }
+  
+    if (req.user.role === 'ADMIN' || req.user.id === comment.authorId) {
+      const updatedComment = await db.comment.update({
+        where: { id: req.user.id },
+        data: { content, postId },
+      });
+      res.json({ message: 'Comment updated successfully', updatedComment });
+    } else {
+      res.status(403).json({ message: 'You are not authorized to update this comment' });
+    }
+  });
+  
 
 app.delete('/comment/:id', async (req, res) => {
   const { id } = req.params;
