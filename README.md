@@ -32,6 +32,8 @@ $ pnpm prisma studio
 Sign-up
 ```bash
 /sign-up
+
+POST:
 {
     "username": "username",
     "name": "name",
@@ -42,6 +44,8 @@ Sign-up
 Sign-in
 ```bash
 /sign-in
+
+POST:
 {
     "username": "username",
     "password": "password"
