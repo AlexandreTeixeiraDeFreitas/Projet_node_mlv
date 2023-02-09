@@ -88,7 +88,7 @@ app.put('/user', body('name').exists().isString().notEmpty(), body('password').e
 })
 app.put('/user/:id', body('name').exists().isString().notEmpty(),
  body('password').exists().isString().notEmpty(),
- body('role').exists().isString().notEmpty(), async (req, res) => {
+ body('role').exists().isString().notEmpty().matches(/^(USER|ADMIN)$/), async (req, res) => {
   try {
     validationResult(req).throw()
     if (!req.params?.id)  {
@@ -96,8 +96,6 @@ app.put('/user/:id', body('name').exists().isString().notEmpty(),
     }
 
     if (req.user.role === 'ADMIN') {
-      const users = await db.user.findMany();
-      res.json(users);
       const hash = await hashPassword(req.body.password)
       const updatedUser = await db.user.update({
         where: {
@@ -119,6 +117,7 @@ app.put('/user/:id', body('name').exists().isString().notEmpty(),
     return res.status(400).json({ message: 'An error ocurred' })
   }
 })
+
 
 app.delete('/user/:id', async (req, res) => {
   try {
