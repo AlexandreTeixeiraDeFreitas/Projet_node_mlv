@@ -62,13 +62,15 @@ app.post('/post', body('title').exists().isString().notEmpty(), body('content').
           },
         },
         include: {
-          author: true,
+          // author: true,
+          comments: true,
         },
       });
     } else {
       posts = await db.post.findMany({
         include: {
           author: true,
+          comments: true,
         },
       });
     }
