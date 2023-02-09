@@ -27,6 +27,7 @@ app.get('/user', async (req, res) => {
       select: {
         id: true,
         username: true,
+        name: true,
         role: true
       }
     })
@@ -47,6 +48,7 @@ app.get('/user/:id', async (req, res) => {
         select: {
           id: true,
           username: true,
+          name: true,
           role: true
         }
       });
