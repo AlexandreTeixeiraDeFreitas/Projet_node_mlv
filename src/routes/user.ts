@@ -86,7 +86,9 @@ app.put('/user', body('name').exists().isString().notEmpty(), body('password').e
     return res.status(400).json({ message: 'An error ocurred' })
   }
 })
-app.put('/user/:id', body('name').exists().isString().notEmpty(), body('password').exists().isString().notEmpty(), async (req, res) => {
+app.put('/user/:id', body('name').exists().isString().notEmpty(),
+ body('password').exists().isString().notEmpty(),
+ body('role').exists().isString().notEmpty(), async (req, res) => {
   try {
     validationResult(req).throw()
     if (!req.params?.id)  {
@@ -103,6 +105,7 @@ app.put('/user/:id', body('name').exists().isString().notEmpty(), body('password
         },
         data: {
           name: req.body.name,
+          role: req.body.role,
           password: hash
         }
       })
