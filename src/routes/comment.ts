@@ -26,15 +26,22 @@ app.post('/comment', body('content').exists().isString().notEmpty(), body('postI
   res.json(comment);
 });
 
-  app.get('/comments', async (req, res) => {
-    const comments = await db.comment.findMany({
+app.get('/comments', async (req, res) => {
+  const comments = await db.comment.findMany({
     include: {
-        author: true,
-        post: true,
+      author: true,
+      post: true,
     },
-    });
-    res.json(comments);
   });
+
+  if (!comments) {
+    return res.status(404).send({ message: 'No comments found' });
+  }
+
+  res.status(200).json(comments);
+});
+
+
 
   app.get('/comment/:id', async (req, res) => {
     const { id } = req.params;
