@@ -81,23 +81,24 @@ app.put('/comment/:id', body('content').exists().isString().notEmpty(), body('po
   }
 });
 
-  app.delete('/comment/:id', async (req, res) => {
-    const { id } = req.params;
-    const comment = await db.comment.findUnique({ where: { id } });
-  
-    if (!comment) {
-      return res.sendStatus(404);
-    }
-    if (req.user.role === 'ADMIN' || req.user.id === comment.authorId) {
-      await db.comment.delete({
-        where: {
-          id,
-        },
-      });
-      res.status(204).end();
-    } else {
-      res.sendStatus(403);
-    }
-  });
+app.delete('/comment/:id', async (req, res) => {
+  const { id } = req.params;
+  const comment = await db.comment.findUnique({ where: { id } });
+
+  if (!comment) {
+    return res.status(404).json({ message: 'Comment not found' });
+  }
+  if (req.user.role === 'ADMIN' || req.user.id === comment.authorId) {
+    await db.comment.delete({
+      where: {
+        id,
+      },
+    });
+    return res.status(200).json({ message: 'Comment deleted successfully' });
+  } else {
+    return res.status(403).json({ message: 'Forbidden' });
+  }
+});
+
 
   export default app

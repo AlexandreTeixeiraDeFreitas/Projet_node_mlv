@@ -125,7 +125,7 @@ app.post('/post', body('title').exists().isString().notEmpty(), body('content').
     const post = await db.post.findUnique({ where: { id } });
   
     if (!post) {
-      return res.sendStatus(404);
+      return res.status(404).json({ message: 'Post not found' });
     }
     if (req.user.role === 'ADMIN' || req.user.id === post.authorId) {
       await db.post.delete({
@@ -133,10 +133,11 @@ app.post('/post', body('title').exists().isString().notEmpty(), body('content').
           id,
         },
       });
-      return res.status(204).end();
+      return res.status(200).json({ message: 'Post deleted successfully' });
     } else {
-      res.sendStatus(403);
+      return res.status(403).json({ message: 'Forbidden' });
     }
   });
+
 
   export default app
