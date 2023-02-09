@@ -21,22 +21,34 @@ app.get('/post', async (req, res) => {
   }
   })
 
-app.post('/post', body('title').exists().isString().notEmpty(), body('content').exists().isString().notEmpty(), async (req, res) => {
-  validationResult(req).throw()
-  const { title, content } = req.body;
-  const post = await db.post.create({
-    data: {
-      title,
-      content,
-      author: {
-        connect: {
-          id: req.user.id,
+  app.post('/post', 
+  body('title').exists().isString().notEmpty(),
+  body('content').exists().isString().notEmpty(),
+  async (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
+    const { title, content } = req.body;
+    try {
+      const post = await db.post.create({
+        data: {
+          title,
+          content,
+          author: {
+            connect: {
+              id: req.user.id,
+            },
+          },
         },
-      },
-    },
-  });
-  res.json(post);
+      });
+      res.status(201).json(post);
+    } catch (error) {
+      console.error(error);
+      res.status(500).send('Error creating post');
+    }
 });
+
 
   // app.get('/posts', async (req, res) => {
  
@@ -52,30 +64,36 @@ app.post('/post', body('title').exists().isString().notEmpty(), body('content').
 
 
   app.get('/posts/', async (req, res) => {
-    let posts;
-    const { from } = req.query;
-    if (from && !isNaN(Number(from))) {
-      posts = await db.post.findMany({
-        where: {
-          createdAt: {
-            gte: new Date(Number(from) * 1000),
+    try {
+      let posts;
+      const { from } = req.query;
+      if (from && !isNaN(Number(from))) {
+        posts = await db.post.findMany({
+          where: {
+            createdAt: {
+              gte: new Date(Number(from) * 1000),
+            },
           },
-        },
-        include: {
-          // author: true,
-          comments: true,
-        },
-      });
-    } else {
-      posts = await db.post.findMany({
-        include: {
-          author: true,
-          comments: true,
-        },
-      });
+          include: {
+            // author: true,
+            comments: true,
+          },
+        });
+      } else {
+        posts = await db.post.findMany({
+          include: {
+            author: true,
+            comments: true,
+          },
+        });
+      }
+      res.json(posts);
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: 'Internal server error' });
     }
-    res.json(posts);
   });
+  
 
   app.get('/post/:id', async (req, res) => {
     const { id } = req.params;
