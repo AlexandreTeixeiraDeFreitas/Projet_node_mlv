@@ -75,6 +75,7 @@ get user (ADMIN) && put user (ADMIN) && delete user (ADMIN)
 PUT:
 {
     "name": "name",
+    "role": "role",
     "password": "password"
 }
 ```
